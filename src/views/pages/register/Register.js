@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import {
   CButton,
   CCard,
@@ -10,11 +10,38 @@ import {
   CInputGroup,
   CInputGroupText,
   CRow,
+  CSpinner,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import { cilLockLocked, cilUser } from '@coreui/icons'
+import { useDispatch, useSelector } from 'react-redux'
+import { unwrapResult } from '@reduxjs/toolkit'
+import { register } from '../../../app/userSlice'
+import { Navigate } from 'react-router-dom'
 
 const Register = () => {
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
+  const dispatch = useDispatch()
+  const [isLoading, setIsLoading] = useState(false)
+  const handleSubmit = async () => {
+    try {
+      setIsLoading(true)
+      const values = { username: username, password: password }
+      const action = register(values)
+      const resultAction = await dispatch(action)
+      const user = unwrapResult(resultAction)
+      console.log(user)
+      setIsLoading(false)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+  const loggedInUser = useSelector((state) => state.user.current)
+  if (loggedInUser?.token) {
+    console.log(123)
+    return <Navigate to="/" replace={true} />
+  }
   return (
     <div className="bg-light min-vh-100 d-flex flex-row align-items-center">
       <CContainer>
@@ -29,7 +56,12 @@ const Register = () => {
                     <CInputGroupText>
                       <CIcon icon={cilUser} />
                     </CInputGroupText>
-                    <CFormInput placeholder="Username" autoComplete="username" />
+                    <CFormInput
+                      placeholder="Username"
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value)}
+                      autoComplete="username"
+                    />
                   </CInputGroup>
                   <CInputGroup className="mb-3">
                     <CInputGroupText>@</CInputGroupText>
@@ -43,6 +75,8 @@ const Register = () => {
                       type="password"
                       placeholder="Password"
                       autoComplete="new-password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
                     />
                   </CInputGroup>
                   <CInputGroup className="mb-4">
@@ -56,7 +90,12 @@ const Register = () => {
                     />
                   </CInputGroup>
                   <div className="d-grid">
-                    <CButton color="success">Create Account</CButton>
+                    <CButton onClick={handleSubmit} color="success">
+                      {isLoading === true && (
+                        <CSpinner component="span" size="sm" aria-hidden="true" />
+                      )}
+                      Create Account
+                    </CButton>
                   </div>
                 </CForm>
               </CCardBody>

@@ -54,7 +54,7 @@ const WidgetsDropdown = () => {
                     backgroundColor: 'transparent',
                     borderColor: 'rgba(255,255,255,.55)',
                     pointBackgroundColor: getStyle('--cui-primary'),
-                    data: [65, 59, 84, 84, 51, 55, 40],
+                    data: [1, 2, 3, 0, 25, 34, 0],
                   },
                 ],
               }}

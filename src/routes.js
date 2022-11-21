@@ -50,9 +50,16 @@ const Toasts = React.lazy(() => import('./views/notifications/toasts/Toasts'))
 
 const Widgets = React.lazy(() => import('./views/widgets/Widgets'))
 
+const Page404 = React.lazy(() => import('./views/pages/page404/Page404'))
+
+//developer
+
+const UserManager = React.lazy(() => import('./views/userManager/UserManager'))
+
 const routes = [
+  { path: '*', name: 'Page404', element: Page404 },
   { path: '/', exact: true, name: 'Home' },
-  { path: '/dashboard', name: 'Dashboard', element: Dashboard },
+  { path: '/dashboard', name: 'Dashboard', element: Dashboard, component: 'Private' },
   { path: '/theme', name: 'Theme', element: Colors, exact: true },
   { path: '/theme/colors', name: 'Colors', element: Colors },
   { path: '/theme/typography', name: 'Typography', element: Typography },
@@ -95,6 +102,7 @@ const routes = [
   { path: '/notifications/modals', name: 'Modals', element: Modals },
   { path: '/notifications/toasts', name: 'Toasts', element: Toasts },
   { path: '/widgets', name: 'Widgets', element: Widgets },
+  { path: '/user-manager', name: 'UserManager', element: UserManager },
 ]
 
 export default routes
