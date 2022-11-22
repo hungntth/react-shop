@@ -1,4 +1,5 @@
 /* eslint-disable prettier/prettier */
+/* eslint-disable react/jsx-key */
 import {
     cibCcApplePay,
     cibCcMastercard,
@@ -13,18 +14,21 @@ import {
     cilPlus,
 } from '@coreui/icons'
 import CIcon from '@coreui/icons-react';
-import { CButton, CCard, CCardBody, CCol, CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle, CPagination, CPaginationItem, CProgress, CRow, CTable, CTableBody, CTableDataCell, CTableHead, CTableHeaderCell, CTableRow } from '@coreui/react';
+import { CButton, CCard, CCardBody, CCol, CPagination, CPaginationItem,  CRow } from '@coreui/react';
 import React, { useState } from 'react';
-import WidgetsDropdown from '../widgets/WidgetsDropdown';
 import avatar1 from 'src/assets/images/avatars/1.jpg'
 import avatar2 from 'src/assets/images/avatars/2.jpg'
 import avatar3 from 'src/assets/images/avatars/3.jpg'
 import avatar4 from 'src/assets/images/avatars/4.jpg'
 import avatar5 from 'src/assets/images/avatars/5.jpg'
+import Modal from './Modal/Modal';
+import TableManager from './TableManager/TableManager';
 
 
 const UserManager = () => {
-    const [openModal, setOpenModal] = useState(false)
+    const [openModal, setOpenModal] = useState(false);
+    const totalPage = 10
+    const [currPage, setCurrPage] = useState(1);
     const tableExample = [
         {
             avatar: { src: avatar1, status: 'success' },
@@ -104,9 +108,16 @@ const UserManager = () => {
             activity: 'Last week',
         },
     ]
+
+    const handlePrevious = () => {
+        setCurrPage(currPage - 1)
+    }
+
+    const handleNext = () => {
+        setCurrPage(currPage + 1)
+    }
     return (
         <>
-            <WidgetsDropdown />
             <CCard className="mb-4">
                 <CCardBody>
                     <CRow>
@@ -122,92 +133,18 @@ const UserManager = () => {
                             </CButton>
                         </CCol>
                     </CRow>
-                    <CTable align="middle" className="mt-4 border" hover responsive>
-                        <CTableHead color="light">
-                            <CTableRow>
-                                {/* <CTableHeaderCell className="text-center">
-                                    <CIcon icon={cilPeople} />
-                                </CTableHeaderCell> */}
-                                <CTableHeaderCell>User</CTableHeaderCell>
-                                {/* <CTableHeaderCell className="text-center">Country</CTableHeaderCell> */}
-                                <CTableHeaderCell>Usage</CTableHeaderCell>
-                                <CTableHeaderCell className="text-center">Quantity Products</CTableHeaderCell>
-                                <CTableHeaderCell>Activity</CTableHeaderCell>
-                                <CTableHeaderCell>Action</CTableHeaderCell>
-                            </CTableRow>
-                        </CTableHead>
-                        <CTableBody>
-                            {tableExample.map((item, index) => (
-                                <CTableRow v-for="item in tableItems" key={index}>
-                                    {/* <CTableDataCell className="text-center">
-                                        <CAvatar size="md" src={item.avatar.src} status={item.avatar.status} />
-                                    </CTableDataCell> */}
-                                    <CTableDataCell>
-                                        <div>{item.user.name}</div>
-                                        <div className="small text-medium-emphasis">
-                                            Registered:{' '}
-                                            {item.user.registered}
-                                        </div>
-                                    </CTableDataCell>
-                                    {/* <CTableDataCell className="text-center">
-                                        <CIcon size="xl" icon={item.country.flag} title={item.country.name} />
-                                    </CTableDataCell> */}
-                                    <CTableDataCell>
-                                        <div className="clearfix">
-                                            <div className="float-start">
-                                                <strong>{item.usage.value} / 100</strong>
-                                            </div>
-                                            <div className="float-end">
-                                                <small className="text-medium-emphasis">{item.usage.period}</small>
-                                            </div>
-                                        </div>
-                                        <CProgress thin color={item.usage.color} value={item.usage.value} />
-                                    </CTableDataCell>
-                                    <CTableDataCell className="text-center">
-                                        <strong>{item.usage.quantity}</strong>
-                                    </CTableDataCell>
-                                    <CTableDataCell>
-                                        <div className="small text-medium-emphasis">Last login</div>
-                                        <strong>{item.activity}</strong>
-                                    </CTableDataCell>
-                                    <CTableDataCell>
-                                        <CCol >
-                                            <CButton style={{ margin: "1 1 1 1" }} color="info">
-                                                <CIcon icon={cilPlus} />
-                                            </CButton>
-                                            <CButton color="info">
-                                                <CIcon icon={cilPlus} />
-                                            </CButton>
-                                            <CButton color="info">
-                                                <CIcon icon={cilPlus} />
-                                            </CButton>
-                                        </CCol>
-                                    </CTableDataCell>
-                                </CTableRow>
-                            ))}
-                        </CTableBody>
-                    </CTable>
-                    <CPagination align="center" aria-label="Page navigation example">
-                        <CPaginationItem disabled>Previous</CPaginationItem>
-                        <CPaginationItem>1</CPaginationItem>
-                        <CPaginationItem>2</CPaginationItem>
-                        <CPaginationItem>3</CPaginationItem>
-                        <CPaginationItem>Next</CPaginationItem>
+                    <TableManager tableExample = {tableExample}/>
+                    <CPagination style = {{'cursor':'pointer'}}align="center" aria-label="Page navigation example">
+                        <CPaginationItem disabled = {currPage === 0} onClick={handlePrevious} >Previous</CPaginationItem>
+                        {
+                            [...new Array(totalPage)].map((item, index)=> <CPaginationItem active={currPage === index} onClick={() => setCurrPage(index)}>{index+1}</CPaginationItem>)
+                        }
+                        <CPaginationItem disabled = {currPage === totalPage - 1} onClick={handleNext} >Next</CPaginationItem>
                     </CPagination>
                 </CCardBody>
+                <Modal openModal = {openModal} setOpenModal = {setOpenModal} />
             </CCard>
-            <CModal className="mt-4" visible={openModal} onClose={() => setOpenModal(false)} alignment="center">
-                <CModalHeader onClose={() => setOpenModal(false)}>
-                    <CModalTitle>Modal title</CModalTitle>
-                </CModalHeader>
-                <CModalBody>Woohoo, youre reading this text in a modal!</CModalBody>
-                <CModalFooter>
-                    <CButton color="secondary" onClick={() => setOpenModal(false)}>
-                        Close
-                    </CButton>
-                    <CButton color="primary">Save changes</CButton>
-                </CModalFooter>
-            </CModal>
+            
         </>
     );
 };
